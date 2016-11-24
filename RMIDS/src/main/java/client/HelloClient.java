@@ -59,6 +59,7 @@ public class HelloClient extends JFrame implements ActionListener{
         this.setSize(500, 200);              //窗体大小
         this.setLocationRelativeTo(null);    //在屏幕中间显示(居中显示)
         this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);    //退出关闭JFrame
+
         this.setVisible(true);               //显示窗体
     }
     public void actionPerformed(ActionEvent e) {
@@ -77,15 +78,12 @@ public class HelloClient extends JFrame implements ActionListener{
         String rmiaddr = "rmi://" + ipaddr + ":" + port + "/HQHello";
         try {
             hlo = (Hello) Naming.lookup(rmiaddr);
-            ctime = new LabelPanel();
-            getContentPane().add(new TimePanel("Local Time"));
-            ctime.setBounds(10, 80, 80, 25);
             stime = new LabelPanel();
             stime.setBounds(10, 80, 80, 25);
             getContentPane().add(new TimePanel("Server Time"));
             Timer timer = new Timer();
             //timer.schedule(task, firstTime, period)
-            timer.schedule(new ShowTime(hlo.getServertime()), new Date(), 1000);
+            timer.schedule(new ShowServerTime(), new Date(), 1000);
             this.setVisible(true);
         } catch (NotBoundException e) {
             e.printStackTrace();
@@ -95,14 +93,24 @@ public class HelloClient extends JFrame implements ActionListener{
             e.printStackTrace();
         }
     }
-    class ShowTime extends TimerTask {
-        String servertime;
-        public ShowTime(String stm) {
-            servertime = stm;
-        }
-        //刷新
+    public void init_clock() {
+        ctime = new LabelPanel();
+        getContentPane().add(new TimePanel("Local Time"));
+        ctime.setBounds(10, 80, 80, 25);
+        Timer timer = new Timer();
+        //timer.schedule(task, firstTime, period)
+        timer.schedule(new ShowClientTime(), new Date(), 1000);
+    }
+    class ShowClientTime extends TimerTask {
         public void run() {
             ctime.label.setText(sdf.format(new Date()));
+            setVisible(true);
+            repaint();
+        }
+    }
+    class ShowServerTime extends TimerTask {
+        //刷新
+        public void run() {
             try {
                 stime.label.setText(hlo.getServertime());
             } catch (RemoteException e) {
@@ -119,7 +127,16 @@ public class HelloClient extends JFrame implements ActionListener{
         public void paint(Graphics g) {
             super.paint(g);
             g.drawString(String.valueOf(LocalorServer), 10, 10);
-            g.drawString(sdf.format(new Date()), 90, 10);
+            if (LocalorServer == "Local Time") {
+                g.drawString(sdf.format(new Date()), 90, 10);
+            }
+            else if (LocalorServer == "Server Time") {
+                try {
+                    g.drawString(hlo.getServertime(), 90, 10);
+                } catch (RemoteException e) {
+                    e.printStackTrace();
+                }
+            }
         }
     }
     class LabelPanel extends JPanel {
@@ -145,5 +162,6 @@ public class HelloClient extends JFrame implements ActionListener{
 //            e.printStackTrace();
 //        }
         HelloClient hc = new HelloClient();
+        hc.init_clock();
     }
 }
