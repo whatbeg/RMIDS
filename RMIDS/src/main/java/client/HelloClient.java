@@ -22,6 +22,7 @@ public class HelloClient extends JFrame implements ActionListener{
     private JPanel ip, port, bts;
     private JLabel ipin, portin;
     private JTextField tf1, tf2;
+    private Hello hlo;
     public HelloClient() {
 
         ip = new JPanel();
@@ -59,15 +60,7 @@ public class HelloClient extends JFrame implements ActionListener{
         this.setLocationRelativeTo(null);    //在屏幕中间显示(居中显示)
         this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);    //退出关闭JFrame
         this.setVisible(true);               //显示窗体
-
-        ctime = new LabelPanel();
-        getContentPane().add(new TimePanel("Local Time"));
-        ctime.setBounds(10, 80, 80, 25);
-
-        Timer timer = new Timer();
-        timer.schedule(new ShowTime(), new Date(), 1000);
     }
-    @Override
     public void actionPerformed(ActionEvent e) {
         if (e.getActionCommand() == "Confirm") {
             connect();
@@ -83,13 +76,16 @@ public class HelloClient extends JFrame implements ActionListener{
         port = "12306";
         String rmiaddr = "rmi://" + ipaddr + ":" + port + "/HQHello";
         try {
-            Hello hlo = (Hello) Naming.lookup(rmiaddr);
+            hlo = (Hello) Naming.lookup(rmiaddr);
+            ctime = new LabelPanel();
+            getContentPane().add(new TimePanel("Local Time"));
+            ctime.setBounds(10, 80, 80, 25);
             stime = new LabelPanel();
             stime.setBounds(10, 80, 80, 25);
             getContentPane().add(new TimePanel("Server Time"));
             Timer timer = new Timer();
             //timer.schedule(task, firstTime, period)
-            timer.schedule(new ShowServerTime(hlo.getServertime()), new Date(), 1000);
+            timer.schedule(new ShowTime(hlo.getServertime()), new Date(), 1000);
             this.setVisible(true);
         } catch (NotBoundException e) {
             e.printStackTrace();
@@ -100,19 +96,18 @@ public class HelloClient extends JFrame implements ActionListener{
         }
     }
     class ShowTime extends TimerTask {
+        String servertime;
+        public ShowTime(String stm) {
+            servertime = stm;
+        }
         //刷新
         public void run() {
             ctime.label.setText(sdf.format(new Date()));
-            repaint();
-        }
-    }
-    class ShowServerTime extends TimerTask {
-        private String str;
-        public ShowServerTime(String s) {
-            str = s;
-        }
-        public void run() {
-            stime.label.setText(str);
+            try {
+                stime.label.setText(hlo.getServertime());
+            } catch (RemoteException e) {
+                e.printStackTrace();
+            }
             repaint();
         }
     }
