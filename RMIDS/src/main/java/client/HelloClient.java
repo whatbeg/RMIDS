@@ -103,19 +103,19 @@ public class HelloClient extends JFrame implements ActionListener{
     }
     class ShowClientTime extends TimerTask {
         public void run() {
-            ctime.label.setText(sdf.format(new Date()));
-            setVisible(true);
+            //ctime.label.setText(sdf.format(new Date()));
+            //setVisible(true);
             repaint();
         }
     }
     class ShowServerTime extends TimerTask {
         //刷新
         public void run() {
-            try {
-                stime.label.setText(hlo.getServertime());
-            } catch (RemoteException e) {
-                e.printStackTrace();
-            }
+//            try {
+//                stime.label.setText(hlo.getServertime());
+//            } catch (RemoteException e) {
+//                e.printStackTrace();
+//            }
             repaint();
         }
     }
@@ -132,6 +132,7 @@ public class HelloClient extends JFrame implements ActionListener{
             }
             else if (LocalorServer == "Server Time") {
                 try {
+                    System.out.println("INVOKE " + LocalorServer);
                     g.drawString(hlo.getServertime(), 90, 10);
                 } catch (RemoteException e) {
                     e.printStackTrace();
@@ -148,19 +149,7 @@ public class HelloClient extends JFrame implements ActionListener{
         }
     }
     public static void main(String args[]) {
-//        try {
-//            // Hello hlo = (Hello) Naming.lookup("rmi://114.212.85.80:12306/HQHello");
-//            // Date dt = new Date();
-//            //System.out.println("本机时间：" + dt.toString());
-//            //System.out.println("服务器时间：" + hlo.getServertime());
-//
-//        } catch (NotBoundException e) {
-//            e.printStackTrace();
-//        } catch (MalformedURLException e) {
-//            e.printStackTrace();
-//        } catch (RemoteException e) {
-//            e.printStackTrace();
-//        }
+
         HelloClient hc = new HelloClient();
         hc.init_clock();
     }
