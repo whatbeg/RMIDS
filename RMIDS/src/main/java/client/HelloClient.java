@@ -103,9 +103,9 @@ public class HelloClient extends JFrame implements ActionListener{
     }
     class ShowClientTime extends TimerTask {
         public void run() {
-            //ctime.label.setText(sdf.format(new Date()));
+            ctime.label.setText(sdf.format(new Date()));
             //setVisible(true);
-            repaint();
+            //repaint();
         }
     }
     class ShowServerTime extends TimerTask {
@@ -132,7 +132,7 @@ public class HelloClient extends JFrame implements ActionListener{
             }
             else if (LocalorServer == "Server Time") {
                 try {
-                    System.out.println("INVOKE " + LocalorServer);
+                    // System.out.println("INVOKE " + LocalorServer);
                     g.drawString(hlo.getServertime(), 90, 10);
                 } catch (RemoteException e) {
                     e.printStackTrace();

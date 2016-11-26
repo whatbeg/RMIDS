@@ -22,14 +22,14 @@ public class HelloImpl extends UnicastRemoteObject implements Hello {
     }
     public String getServertime() throws RemoteException {
         Date dt = new Date();
-        for (int i=0;i<10000;i++) {
-            for (int j=0;j<10000;j++) {
-                int t = i*j + 1;
-                t = t*t*t / t*12-12;
-            }
-        }
+//        for (int i=0;i<10000;i++) {
+//            for (int j=0;j<40000;j++) {
+//                int t = i*j + 1;
+//                t = t*t*t / t*12-12;
+//            }
+//        }
         System.out.println(new Date() + "Invoked!");
-        //return sdf.format(dt);
-        return "NONO";
+        return sdf.format(dt);
+        //return "NONO";
     }
 }
