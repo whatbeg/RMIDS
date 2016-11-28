@@ -65,10 +65,10 @@ public class Client extends JFrame implements ActionListener {
         this.setVisible(true);               //显示窗体
     }
     public void actionPerformed(ActionEvent e) {
-        if (e.getActionCommand() == "Confirm") {
+        if (e.getActionCommand().equals("Confirm")) {
             connect();
         }
-        else if (e.getActionCommand() == "Cancel") {
+        else if (e.getActionCommand().equals("Cancel")) {
             System.exit(0);
         }
     }
@@ -84,7 +84,7 @@ public class Client extends JFrame implements ActionListener {
             hlo = (Clock) Naming.lookup(rmiaddr);
             stime = new LabelPanel();
             stime.setBounds(10, 80, 80, 25);
-            getContentPane().add(new TimePanel("Server Time"));
+            getContentPane().add(new TimePanel("1234"));
             Timer timer = new Timer();
             //timer.schedule(task, firstTime, period)
             timer.schedule(new ShowServerTime(), new Date(), 1000);
@@ -97,19 +97,6 @@ public class Client extends JFrame implements ActionListener {
             e.printStackTrace();
         }
     }
-    public void init_clock() {
-        ctime = new LabelPanel();
-        getContentPane().add(new TimePanel("Local Time"));
-        ctime.setBounds(10, 80, 80, 25);
-        Timer timer = new Timer();
-        //timer.schedule(task, firstTime, period)
-        timer.schedule(new ShowClientTime(), new Date(), 1000);
-    }
-    class ShowClientTime extends TimerTask {
-        public void run() {
-            ctime.label.setText(sdf.format(new Date()));
-        }
-    }
     class ShowServerTime extends TimerTask {
         //刷新
         public void run() {
@@ -117,36 +104,33 @@ public class Client extends JFrame implements ActionListener {
         }
     }
     class TimePanel extends JPanel {
-        private String LocalorServer;
-        public TimePanel(String lors) {
-            LocalorServer = lors;
-        }
+        private SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        private String code;
+        public TimePanel(String c) { code = c; }
         public void paint(Graphics g) {
             super.paint(g);
-            g.drawString(String.valueOf(LocalorServer), 10, 10);
-            if (LocalorServer == "Local Time") {
-                g.drawString(sdf.format(new Date()), 90, 10);
-            }
-            else if (LocalorServer == "Server Time") {
-                try {
-                    g.drawString(hlo.getServertime(), 90, 10);
-                } catch (RemoteException e) {
-                    e.printStackTrace();
-                }
+            g.drawString(String.valueOf("Server Time: "), 10, 10);
+            try {
+                long start = System.currentTimeMillis();
+                long res = hlo.getServertime(code);
+                long end = System.currentTimeMillis();    //cost 0.5
+                System.out.println("Invoke Time: " + (end-start + 0.5));
+                if (res == 0)
+                    g.drawString("Request Denied!", 90, 10);
+                else
+                    g.drawString(sdf.format(res+(end-start+0.5)/2), 90, 10);
+            } catch (RemoteException e) {
+                e.printStackTrace();
             }
         }
     }
     class LabelPanel extends JPanel {
         JLabel label = new JLabel("");
-        JLabel note = new JLabel("Local Time");
         public LabelPanel() {
-            add(note);
             add(label);
         }
     }
     public static void main(String args[]) {
-
         Client hc = new Client();
-        //hc.init_clock();
     }
 }

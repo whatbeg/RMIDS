@@ -5,6 +5,6 @@ package server;
 import java.rmi.*;
 
 public interface Clock extends Remote {
-    public String helloWorld() throws RemoteException;
-    public String getServertime() throws RemoteException;
+    public String helloWorld(String code) throws RemoteException;
+    public long getServertime(String code) throws RemoteException;
 }

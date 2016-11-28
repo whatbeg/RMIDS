@@ -40,7 +40,7 @@ public class Server extends JFrame implements ActionListener {
         this.setVisible(true);               //显示窗体
     }
     public void actionPerformed(ActionEvent e) {
-        if (e.getActionCommand() == "Exit") {
+        if (e.getActionCommand().equals("Exit")) {
             System.exit(0);
         }
     }
@@ -74,22 +74,33 @@ public class Server extends JFrame implements ActionListener {
     }
     public static void main(String args[]) {
         String ss = "";
+        String ip, port;
+        String []myArgs = {"", ""};
+        if (args.length != 2) {
+            System.out.println("Usage java server.Server <ipaddress> <port>");
+            //System.exit(2);
+            myArgs[0] = "114.212.85.80";
+            myArgs[1] = "1099";
+        }
+        else {
+            myArgs[0] = args[0];
+            myArgs[1] = args[1];
+        }
+        ip = myArgs[0];
+        port = myArgs[1];
         try {
             Clock clk = new ClockImpl();
-            LocateRegistry.createRegistry(1099);         //注册远程引用
+            LocateRegistry.createRegistry(Integer.parseInt(port));         //注册远程引用
             Naming.bind("rmi://114.212.85.80:1099/clock", clk);   //绑定命名
-            //System.out.println("Naming 绑定成功！");
+            //Naming.bind("rmi://" + ip + ":" + port + "/clock", clk);
             ss = "Naming 绑定成功！";
         } catch (RemoteException e) {
-            //System.out.println("创建远程对象发生异常！");
             ss = "创建远程对象发生异常！";
             e.printStackTrace();
         } catch (AlreadyBoundException e) {
-            //System.out.println("发生重复绑定对象异常！");
             e.printStackTrace();
             ss = "发生重复绑定对象异常！";
         } catch (MalformedURLException e) {
-            //System.out.println("发生URL畸形异常！");
             e.printStackTrace();
             ss = "发生URL畸形异常！";
         }
