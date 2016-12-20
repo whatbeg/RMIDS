@@ -1,5 +1,7 @@
-package server;
+package master;
 
+import javax.swing.*;
+import java.awt.event.ActionListener;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
@@ -13,18 +15,17 @@ import java.util.TimerTask;
 import java.text.SimpleDateFormat;
 import java.util.Timer;
 import java.awt.event.*;
-
 /**
- * Created by Qiu Hu on 2016/11/22.
+ * Created by Allen Hu on 2016/12/20.
  */
 
-public class Server extends JFrame implements ActionListener {
+public class Master extends JFrame implements ActionListener {
     private SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
     private LabelPanel servtime = null;
     private JPanel pnl;
     private JButton cancel;
     private JLabel note;
-    public Server(String text) {             //基础UI
+    public Master(String text) {             //基础UI
         pnl = new JPanel();
         cancel = new JButton("Exit");
         cancel.addActionListener(this);
@@ -33,7 +34,7 @@ public class Server extends JFrame implements ActionListener {
         pnl.add(note);
         pnl.add(cancel);
         this.add(pnl);
-        this.setTitle("Server Time Board");
+        this.setTitle("Master Time Board");
         this.setSize(500, 200);              //窗体大小
         this.setLocationRelativeTo(null);    //在屏幕中间显示(居中显示)
         this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);    //退出关闭JFrame
@@ -53,7 +54,7 @@ public class Server extends JFrame implements ActionListener {
     class TimePanel extends JPanel {
         public void paint(Graphics g) {
             super.paint(g);
-            g.drawString(String.valueOf("Server Time:"), 10, 10);
+            g.drawString(String.valueOf("Master Time:"), 10, 10);
             g.drawString(sdf.format(new Date()), 90, 10);
         }
     }
@@ -77,10 +78,10 @@ public class Server extends JFrame implements ActionListener {
         String ip, port;
         String []myArgs = {"", ""};
         if (args.length != 2) {
-            System.out.println("Usage java server.Server <ipaddress> <port>");
+            System.out.println("Usage java master.Master <ipaddress> <port>");
             //System.exit(2);
             myArgs[0] = "114.212.85.80";
-            myArgs[1] = "1097";
+            myArgs[1] = "1099";
         }
         else {
             myArgs[0] = args[0];
@@ -89,10 +90,9 @@ public class Server extends JFrame implements ActionListener {
         ip = myArgs[0];
         port = myArgs[1];
         try {
-            FileStore clk = new FSImpl();
+            MasterCore mstc = new MasterImpl();
             LocateRegistry.createRegistry(Integer.parseInt(port));         //注册远程引用
-            Naming.bind("rmi://114.212.85.80:1097/clock", clk);   //绑定命名
-            //Naming.bind("rmi://" + ip + ":" + port + "/clock", clk);
+            Naming.bind("rmi://114.212.85.80:1099/master", mstc);   //绑定命名
             ss = "Naming 绑定成功！";
         } catch (RemoteException e) {
             ss = "创建远程对象发生异常！";
@@ -104,7 +104,7 @@ public class Server extends JFrame implements ActionListener {
             e.printStackTrace();
             ss = "发生URL畸形异常！";
         }
-        Server hs = new Server(ss);
+        Master hs = new Master(ss);
         hs.display();
     }
 }
